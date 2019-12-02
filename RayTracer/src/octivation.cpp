@@ -173,10 +173,12 @@ double	OctTree::pointLightSourceLevel(Shape* light, Intersection& intersection) 
 	R.origin = intersection.ray.calculate(intersection.t);
 	distance = light->getOrigin().distance(R.origin);
 	V = intersection.pShape->getOrigin() - R.origin;
-	N = light->getNormal(R.calculate(intersection.t));
+	N = light->getNormal( R.origin );
 	N.normalize();
 	facingRatio = MIN(0, dot(N, V));
+	facingRatio = MIN(0, dot(V, N));
 	return ((light->getIntencity() - distance) / light->getIntencity()) * facingRatio;
+	// return light->getIntencity() * facingRatio;
 }
 
 double	OctTree::directLightSourceLevel(Shape* light, Intersection& intersection) {

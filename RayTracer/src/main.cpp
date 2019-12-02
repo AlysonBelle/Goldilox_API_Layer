@@ -18,17 +18,14 @@ using namespace std;
 void    rayTrace(int piece, int max_pieces) {
     std::cout   << "TRACING\n";
 
-    // (y * w) + x
-    /*
-    x = index % Width;
-    y = (index - x) / Width;
-
-    */
     X1 = 0;
-    X2 = g_width / 2;
+    X2 = g_width;
     Y1 = 0;
     Y2 = g_height;
     if (piece == 1) {
+        X1 = 0;
+		X2 = g_width / 2;
+    } else if (piece == 2) {
         X1 = g_width / 2;
         X2 = g_width;
     }
@@ -146,6 +143,7 @@ void	spawnSphere(Vector v, double size, Color c) {
 	a.scene->addShape(sphere);
 }
 
+
 void	spawnLight(Vector v, double size, E_ShapeType type) {
 	Light *light = new Light(v, size, type);
 	a.scene->addShape(light);
@@ -177,15 +175,13 @@ void	init() {
 
 void	createScene() {
 	spawnPlane({0.0f, 0.0f, 0.0f}, Vector(), {0.5f, 1.0f, 0.5f});
-	spawnSphere(
-		   {5.0f, 
-			2.0f, 
-			5.0f},
-			1, {
-			1.0f, 
-			1.0f, 
-			1.0f});
-    spawnLight({0.0f, 10.0f, 0.0f}, 250, E_SPLight);
+	// spawnSphere({5.0f, 2.0f, 5.0f}, 1, {1.0f, 1.0f, 1.0f});
+
+	// spawnSphere({5.0f, 0.0f, 0.0f}, 3, {1.0f, 0.0f, 0.0f});
+	// spawnSphere({15.0f, 0.0f, 0.0f}, 3, {1.0f, 1.0f, 0.0f});
+
+	// spawnSphere({5.0f, 4.0f, 0.0f}, 1, {1.0f, 1.0f, 1.0f});
+    spawnLight({5.0f, 5.0f, 0.0f}, 25, E_SPLight);
     return ;
 	
 	for (int i = -20; i < 20; i += 2) {
@@ -230,6 +226,8 @@ void	createScene() {
 }
 
 int		main(int argc, char *argv[]) {
+	char *name;
+
 	srand(1000);
 	init();
 	createScene();
@@ -239,19 +237,20 @@ int		main(int argc, char *argv[]) {
 	time_t stime = time(NULL);
 
 	if (argc > 1) {
+		name = (char*)(void *)"Display 1.bmp";
         rayTrace(atoi(argv[1]), 2);
     } else {
-        rayTrace(1, 2);
+		name = (char*)(void *)"Display 2.bmp";
     }
 	std::cout << time(NULL) - stime << " seconds to trace" << std::endl;
+	rayTrace(0, 2);
 	std::cout << "Starting display driver: " << std::endl;
 	a.sdl->display();
 	a.minimap->display();
 	std::cout << "done" << std::endl;
 	bool running = true;
 	while (running) {
-		a.sdl->handleInput();
-		a.minimap->handleInput();
+		stime = time(NULL);
 		SDL_Delay(16);
 	}
 }

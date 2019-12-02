@@ -100,3 +100,21 @@ eKey  SDL::handleInput( void ) {
 	}
 	return eKNone;
 }
+
+
+void SDL::saveImage( char *name ) {
+
+// Create an empty RGB surface that will be used to create the screenshot bmp file
+	// SDL_Surface* pScreenShot = SDL_CreateRGBSurface(0, this->width, this->height, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+//    if(pScreenShot)
+//    {
+//       // Read the pixels from the current render target and save them onto the surface
+//       SDL_RenderReadPixels(this->renderer, NULL, SDL_GetWindowPixelFormat(this->window), pScreenShot->pixels, pScreenShot->pitch);
+
+//       // Create the bmp screenshot file
+//       SDL_SaveBMP(pScreenShot, name);
+
+//       // Destroy the screenshot surface
+//       SDL_FreeSurface(pScreenShot);
+//    }
+}

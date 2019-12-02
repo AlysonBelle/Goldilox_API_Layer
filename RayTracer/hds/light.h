@@ -5,8 +5,8 @@
 
 class Light : public Sphere {
 protected:
-	float		intensity;
 	E_ShapeType	type;
+	float		intensity;
 
 public:
 	Light(const Point& centre, double intensity, E_ShapeType type);

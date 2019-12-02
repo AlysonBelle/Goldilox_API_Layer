@@ -19,6 +19,7 @@ public:
     void putpixel(unsigned int x, unsigned int y, unsigned int colour) ;
 	void putpixel(unsigned int x, unsigned int y, Color c);
 
+	void saveImage( char *name );
 	void drawLine(int x1, int y1, int x2, int y2, Color c);
 
     void clearpixels() ;

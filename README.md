@@ -12,6 +12,7 @@ Python application across a network).
 
 
 Distributed Raytracer by @haegan (George Sferos)<br>
-Java/Python intergration by @icequeen88 (Karini Govender)
+Java/Python intergration by @icequeen88 (Karini Govender)<br>
+Network Layer by AlysonBelle (Alyson Ngonyama)
 
 

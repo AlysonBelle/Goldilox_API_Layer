@@ -2,10 +2,15 @@
 
 #include <cmath>
 
-PerspectiveCamera::PerspectiveCamera(Point origin,
-	Vector target, Vector upguide, double fov, double aspectRatio)
+PerspectiveCamera::PerspectiveCamera(
+	Point origin,
+	Vector target,
+	Vector upguide,
+	double fov,
+	double aspectRatio)
 	: origin(origin)
-{
+{	
+	// forward =  norm ( to - from)
 	forward = (target - origin).normalized();
 	right = cross(forward, upguide).normalized();
 	up = cross(right, forward);

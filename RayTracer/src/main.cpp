@@ -38,8 +38,8 @@ void    rayTrace(int piece, int max_pieces) {
 	double		r, g, b;
 	
 	drawHitBounds(boundingBox);
-	for (int x = 0; x < g_width; x++) {
-		for (int y = 0; y < g_height; y++) {
+	for (int x = X1; x < X2; x++) {
+		for (int y = Y1; y < Y2; y++) {
 			Vector2 screenCoord((2.0f*x) / g_width - 1.0f,
 								(-2.0f*y) / g_height + 1.0f);
 			Ray ray = camera->makeRay(screenCoord);
@@ -167,14 +167,24 @@ void	init() {
 	SDL_SetWindowPosition(a.minimap->window, g_width, 200);
 	a.minimap->display();
 
-	a.camera = new PerspectiveCamera(Point(-5.0f, 1.0f, 0.0f),
-		Vector(0.0f, 1.0f, 0.0f), Vector(), 70.0f * PI / 180.0f,
+	a.camera = new PerspectiveCamera(
+		Point(-5.0f, 1.0f, 0.0f),
+		Vector(0.0f, 1.0f, 0.0f),
+		Vector(), 70.0f * PI / 180.0f,
 		(double)g_width / (double)g_height);
 	a.scene = new ShapeSet;
 }
 
 void	createScene() {
 	spawnPlane({0.0f, 0.0f, 0.0f}, Vector(), {0.5f, 1.0f, 0.5f});
+	spawnSphere(
+		   {5.0f, 
+			2.0f, 
+			5.0f},
+			1, {
+			1.0f, 
+			1.0f, 
+			1.0f});
     spawnLight({0.0f, 10.0f, 0.0f}, 250, E_SPLight);
     return ;
 	
@@ -234,9 +244,10 @@ int		main(int argc, char *argv[]) {
         rayTrace(1, 2);
     }
 	std::cout << time(NULL) - stime << " seconds to trace" << std::endl;
-
+	std::cout << "Starting display driver: " << std::endl;
 	a.sdl->display();
 	a.minimap->display();
+	std::cout << "done" << std::endl;
 	bool running = true;
 	while (running) {
 		a.sdl->handleInput();

@@ -13,7 +13,9 @@ int         server(char **argv)
         perror("socket");
         return (-1);
     }
-
+    int enable = 1;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
+        perror("setsockopt(SO_REUSEADDR) failed");
     memset(&socket_address, '\0', sizeof(socket_address));
     socket_address.sin_family = AF_INET;
     socket_address.sin_addr.s_addr = INADDR_ANY;
@@ -75,7 +77,7 @@ int         determine_client_or_server(char **argv)
 
 int         main(int argc, char **argv)
 {
-    if (argc != 3)
+    if (argc < 2)
     {
         printf("%s [port]\n", argv[0]);
         return (1);

@@ -4,7 +4,7 @@
 
 #include "../inc/node.h"
 
-struct pollfd fds[3];
+struct pollfd fds[4];
 int pollfd_list_length = 0;
 
 void    push_pollfd(int sockfd)
@@ -36,21 +36,38 @@ void    reset_pollfd_list(socket_t *socket_list)
 void    init_pollfd_list(socket_t *socket_list)
 {
     memset(fds, 0, sizeof(fds));
+    pollfd_list_length = 0;
     reset_pollfd_list(socket_list);
 }
 
 
-void    api_loop(int sockfd, int api_socket)
+void    api_loop(int sockfd, socket_t *socket_list, int to_ignore)
 {
     unsigned char buffer[4096];
 
     bzero(buffer, 4096);
-    recv(sockfd, buffer, 4096, 0);
-    send(api_socket, buffer, 4096, 0);
+    while (recv(sockfd, buffer, 4096, 0) == 0)
+        ;
+   
+    socket_t *current;
+    int counter;
 
+    counter = 0;
+    current = socket_list->next;
+    while (current)
+    {
+        if (current->sockfd == sockfd || current->sockfd == to_ignore)
+        {
+            current = current->next;
+            continue ;
+
+        } 
+        if (buffer[0] == 0)
+            break;
+        send(current->sockfd, buffer, 4096, 0);
+        current = current->next;
+    }
     bzero(buffer, 4096);
-    recv(api_socket, buffer, 4096, 0);
-    send(sockfd, buffer, 4096, 0);
 
 }
 
@@ -65,8 +82,8 @@ void    handle_api_request_response(socket_t *socket_list, int socket_to_ignore)
     {
         if (fds[counter].revents)
         {
-            api_loop(fds[counter].fd, fds[2].fd);
-            break ;
+            api_loop(fds[counter].fd, socket_list, socket_to_ignore);
+            break;
         }
         counter++;
     }
@@ -81,7 +98,6 @@ int     poll_loop(socket_t *socket_list, struct sockaddr_in socket_address)
     {
         init_pollfd_list(socket_list);
         trigger = poll(fds, pollfd_list_length, 100000);        
-    
         if (trigger)
         {
            if (fds[0].revents & POLLIN)
@@ -91,7 +107,7 @@ int     poll_loop(socket_t *socket_list, struct sockaddr_in socket_address)
            }
            else
            {
-                handle_api_request_response(socket_list, fds[0].fd);
+               handle_api_request_response(socket_list, fds[0].fd);
            }
         }
     }

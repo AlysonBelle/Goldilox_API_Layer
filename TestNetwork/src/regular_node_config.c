@@ -18,7 +18,9 @@ socket_t    *connection_node(struct sockaddr_in *server_socket_address)
         perror("socket");
         return (NULL);
     }
-
+    int enable = 1;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0)
+        perror("setsockopt(SO_REUSEADDR) failed");
     memset(&socket_address, '\0', sizeof(socket_address));
     socket_address.sin_family = AF_INET;
     socket_address.sin_addr.s_addr = INADDR_ANY;
@@ -43,7 +45,8 @@ void      regular_node_config(int sockfd, struct sockaddr_in socket_address)
 {
     socket_t    *socket_list;
     struct sockaddr_in server_sock_address;
-
+    
+   // socket_list = push_socket(socket_list, sockfd);
     socket_list = connection_node(&server_sock_address);
     socket_list = push_socket(socket_list, sockfd);
 

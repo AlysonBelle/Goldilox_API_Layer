@@ -30,7 +30,7 @@ Terminal 2 (Client node connects to Genesis node and opens a separate listening 
 
 Right now, Terminal 1 is listening on port `4242` and Terminal 2 is listening on `4321`
 
-####Connect the apps
+#### Connect the apps
 Terminal 3 (attach the app to node at Terminal 2)
 ```
 python3 HelloResponse.py 4321
@@ -40,13 +40,13 @@ Terminal 4 (attach its counterpart to Terminal 1)
 python3 HelloWorld.py 4242
 ```
 
-####Interact with the HelloWorld.py
+#### Interact with the HelloWorld.py
 
 ```
 Hello user$>Hello world
 received I received Hello World
 ```
-####See the result on the helloResponse.py screen
+#### See the result on the helloResponse.py screen
 ```
 receiving request from user Hello World
 responding
@@ -54,7 +54,7 @@ to respond is  Hello World
 ```
 
 
-#TODO
+# TODO
 - Add security to the API layer.
 - Support UDP.
 - Test (a lot).

@@ -1,3 +1,21 @@
+
+# Goldilox_API_Layer
+
+This repo is specifically for testing out API concepts for a peer-to-peer API network.
+
+The focus is on figuring out the differences in terms of performance and network structure between
+high performance apps (a raytracer) and low to medium performance apps (integrating a Java application with a
+Python application across a network).
+
+### This design is probably trash so use anything here at your own rist
+
+
+Distributed Raytracer by @haegan (George Sferos)<br>
+Java/Python intergration by @icequeen88 (Karini Govender)
+
+
+
+
 # Ray Tracer
 
 This Ray Tracer is a port of the the ray tracer I did at school
@@ -45,17 +63,3 @@ Make sure you have GCC, and Make installed and configured on your machine
 <br>![](images/pretty_ball_on_a_plane.png)
 
 
-
-# Goldilox_API_Layer
-
-This repo is specifically for testing out API concepts for a peer-to-peer API network.
-
-The focus is on figuring out the differences in terms of performance and network structure between
-high performance apps (a raytracer) and low to medium performance apps (integrating a Java application with a
-Python application across a network).
-
-### This design is probably trash so use anything here at your own rist
-
-
-Distributed Raytracer by @haegan (George Sferos)<br>
-Java/Python intergration by @icequeen88 (Karini Govender)

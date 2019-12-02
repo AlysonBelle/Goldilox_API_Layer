@@ -8,7 +8,7 @@ The focus is on figuring out the differences in terms of performance and network
 high performance apps (a raytracer) and low to medium performance apps (integrating a Java application with a
 Python application across a network).
 
-### This design is probably trash so use anything here at your own rist
+### This design is probably trash so use anything here at your own risk
 
 
 Distributed Raytracer by @haegan (George Sferos)<br>

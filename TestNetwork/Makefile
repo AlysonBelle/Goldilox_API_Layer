@@ -1,9 +1,5 @@
 
 
-
-
-
-
 exec = test_node
 
 sources_list = node.c socket_list.c regular_node_config.c\

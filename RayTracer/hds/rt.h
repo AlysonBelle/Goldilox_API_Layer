@@ -1,7 +1,7 @@
 #ifndef RT_H
 #define RT_H
 
-enum eKey {eKNone, eKUp, eKDown, eKRight, eKLeft, eKForward, eKBackward, eKExit};
+enum eKey {eKNone, eKUp, eKDown, eKRight, eKLeft, eKForward, eKSpace, eKBackward, eKExit};
 
 #define MAX(x, y) x < y ? x : y
 #define MIN(x, y) x > y ? x : y

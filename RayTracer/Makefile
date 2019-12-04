@@ -3,7 +3,8 @@ NAME		= RT
 SRC_PATH	= src/
 OBJS_PATH	= objs/
 
-SRC = camera.cpp \
+SRC =  strsplit.cpp \
+		camera.cpp \
 		sphere.cpp \
 		plane.cpp \
 		color.cpp \
@@ -24,8 +25,8 @@ OBJS =	$(addprefix $(OBJS_PATH), $(OBJ))
 
 HEAD =	-I hds/
 
-SDLINC	= `sdl2-config --cflags`
-SDLLIB	= `sdl2-config --libs`
+SDLINC	= `sdl2-config --cflags` -I network.hpp -I /Library/Frameworks/SDL2_net.framework/Headers/
+SDLLIB	= `sdl2-config --libs` -L /Users/gsferopo/Downloads/SDL2_net/ -lSDL2_net 
 CC		= g++
 
 ifeq ($(OS),Windows_NT)

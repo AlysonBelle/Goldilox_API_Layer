@@ -97,6 +97,9 @@ eKey  SDL::handleInput( void ) {
 		if (keyCode == SDLK_a) {
 			return eKLeft;
 		}
+		if (keyCode == SDLK_SPACE) {
+			return eKSpace;
+		}
 	}
 	return eKNone;
 }

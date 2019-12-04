@@ -1,6 +1,29 @@
+#include <iostream>
+#include <string>
+#include <algorithm>
+#include <iterator>
+#include <vector>
+
+#include <string.h>
 #include <ctime>
 #include <iostream>
 #include <fstream>
+#include <unistd.h>
+#include <string.h>
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#include <pthread.h>
+#include <stdlib.h>
+
+#include "network.hpp"
+
 #include "rt.h"
 #include "image.h"
 #include "camera.h"
@@ -8,15 +31,49 @@
 #include "SDL.hpp"
 #include "light.h"
 
+char		**cstrsplit(const char *str, char delim);
+char		*uitoa(unsigned long long value);
+
 t_Main	a;
 OctTree	*boundingBox;
+
 
 int X1, Y1, X2, Y2 = 0;
 
 using namespace std;
 
-void    rayTrace(int piece, int max_pieces) {
+
+int    make_socket(char **argv)
+{
+    int port_number;
+    int sockfd;
+    struct sockaddr_in  socket_address;
+
+
+    port_number = atoi(argv[1]);
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (sockfd < 0)
+    {
+        perror("socket");
+        return (-1);
+    }
+    memset(&socket_address, '\0', sizeof(socket_address));
+    socket_address.sin_family = AF_INET;
+    socket_address.sin_addr.s_addr = inet_addr("127.0.0.1");
+    socket_address.sin_port = htons(port_number);
+
+    if (connect(sockfd, (struct sockaddr *)&socket_address, sizeof(socket_address)) < 0)
+    {
+        perror("connect");
+        return (-1);
+    }
+    return (sockfd);
+}
+
+char *rayTrace(int piece, int max_pieces) {
     std::cout   << "TRACING\n";
+
+	string image_as_a_string = "";
 
     X1 = 0;
     X2 = g_width;
@@ -44,7 +101,7 @@ void    rayTrace(int piece, int max_pieces) {
 			Ray ray = camera->makeRay(screenCoord);
 			Intersection intersection(ray);
 
-			//if (calcInterShapes(boundingBox, intersection)) {
+			// if (calcInterShapes(boundingBox, intersection)) {
 			if (a.scene->intersect(intersection)) {
 				Intersection lightIntersection = intersection;
 
@@ -55,14 +112,20 @@ void    rayTrace(int piece, int max_pieces) {
 				r = intersection.color.r * 255.0f * intersection.lightDistance;
 				g = intersection.color.g * 255.0f * intersection.lightDistance;
 				b = intersection.color.b * 255.0f * intersection.lightDistance;
-
+				
+				image_as_a_string += to_string(int(r)) + "," + to_string(int(g)) + "," + to_string(int(b));
 				a.sdl->putpixel(x, y, Color(r, g, b));
 			} else {
+				image_as_a_string += "0,0,0";
 				a.sdl->putpixel(x, y, 0);
 			}
+			image_as_a_string += '|';
 		}
+		image_as_a_string += '-';
 	}
-	std::cout << "TRACED!\n";
+	cout << "TRACED!\n";
+	cout << image_as_a_string << endl;
+	return (char *)image_as_a_string.c_str();
 }
 
 bool	calcInterShapes(OctTree *o, Intersection &intersection) {
@@ -227,28 +290,93 @@ void	createScene() {
 	}
 }
 
+void addImage(char *text) {
+	return ;
+	char **image = cstrsplit(text, '-');
+	int y = 0;
+	while (image[y]) {
+		char **colours = cstrsplit(image[y], '|');
+		int x = 0;
+		while (colours[x]) {
+			char **color = cstrsplit(colours[x], ',');
+
+			int r = atoi(color[0]);
+			int g = atoi(color[1]);
+			int b = atoi(color[2]);
+
+			a.sdl->putpixel(x, y, Color(r, g, b));
+
+			x++;
+		}
+		y++;
+	}
+}
+
 int		main(int argc, char *argv[]) {
+	if (argc != 3)
+    {
+        printf("Usage : %s\n [port] [trace part 0/1/2] - Automatically connecting to 127.0.0.1\n", argv[0]);
+        return (-1);
+    }
+	int sockfd;
+    // setup the socket
+    sockfd = make_socket(argv);
+
 	srand(1000);
 	init();
 	createScene();
 
 	boundingBox->octavateWorld();
 
-	time_t stime = time(NULL);
-
-	if (argc > 1) {
-        rayTrace(atoi(argv[1]), 2);
-    } else {
-		rayTrace(0, 2);
-    }
-	std::cout << time(NULL) - stime << " seconds to trace" << std::endl;
-	std::cout << "Starting display driver: " << std::endl;
-	a.sdl->display();
-	a.minimap->display();
-	std::cout << "done" << std::endl;
 	bool running = true;
 	while (running) {
-		a.sdl->handleInput();
+		if (a.sdl->handleInput() == eKSpace) {
+
+			time_t stime = time(NULL);
+			char *image;
+			image = rayTrace(atoi(argv[2]), 2);
+			std::cout << time(NULL) - stime << " seconds to trace " << strlen(image) << std::endl;
+			
+			size_t buffer_size = sizeof(char) * strlen(image) + 1;
+			
+
+			unsigned char buffer[buffer_size];
+			bzero(buffer, buffer_size);
+			if (strcmp(argv[2], "1") == 0) {
+				recv(sockfd, buffer, buffer_size, 0);
+				ssize_t size = atoi((char *)buffer);
+				ssize_t received = 0;
+				while (received < size) {
+					int got = recv(sockfd, &buffer[received], buffer_size, 0);
+					received += got;
+					printf("The server said stuff");
+				}
+				// addImage((char *)buffer);
+			} else {
+				printf("sending message\n");
+				memcpy(buffer, image, buffer_size);
+				
+
+				char *size_to_send = uitoa(buffer_size);
+				send(sockfd, size_to_send, strlen(size_to_send) + 1, 0);
+				ssize_t sent_size;
+				size_t size = 0;
+				while (size < buffer_size) {
+					sent_size = send(sockfd, &buffer[size], 4096, 0);
+					size += sent_size;
+				}
+
+
+
+				send(sockfd, buffer, buffer_size, 0); // send your string to the other side
+			}
+
+			std::cout << "Starting display driver: " << std::endl;
+			a.sdl->display();
+			a.minimap->display();
+			std::cout << "done" << std::endl;
+
+		}
 		a.minimap->handleInput();
 		SDL_Delay(16);
 	}
